@@ -1,0 +1,88 @@
+# -------------------------------------------------------------------
+# MONOREPO CORE (General & IDE Files)
+# -------------------------------------------------------------------
+
+# Common OS / IDE files (at any level)
+.DS_Store
+.idea/                 
+.vscode/               
+*.swp
+*.bak
+*~
+
+# Generated build logs and temp files
+*.log
+*.tmp
+
+# -------------------------------------------------------------------
+# PYTHON / DJANGO (backend/django)
+# -------------------------------------------------------------------
+
+# Virtual Environment (CRITICAL for Monorepo performance)
+/backend/django/venv/
+
+# Django/Python compiled files
+/backend/django/__pycache__/
+*.pyc
+*.pyd
+*.so
+
+# Local Data (Often used during development, should not be committed)
+/backend/django/db.sqlite3
+/backend/django/migrations/00*.py  # Ignore auto-generated migrations after first commit
+
+# -------------------------------------------------------------------
+# JAVA / SPRING BOOT (backend/spring_boot)
+# -------------------------------------------------------------------
+
+# Maven/Gradle Build Output (CRITICAL for Monorepo performance)
+/backend/spring_boot/target/
+/backend/spring_boot/bin/
+/backend/spring_boot/build/
+*.class
+
+# Maven Artifacts
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# Gradle (if used, even for a Maven project's IDE)
+/backend/spring_boot/.gradle
+
+# IDE/Tooling
+/backend/spring_boot/.classpath
+/backend/spring_boot/.project
+/backend/spring_boot/.settings/
+
+# -------------------------------------------------------------------
+# FLUTTER / DART (frontend/flutter_app)
+# -------------------------------------------------------------------
+
+# Build Output (CRITICAL for Monorepo performance)
+/frontend/flutter_app/build/
+/frontend/flutter_app/.dart_tool/
+
+# IDE/Tooling (IntelliJ files)
+/frontend/flutter_app/.idea/
+
+# pub files
+/frontend/flutter_app/.packages
+/frontend/flutter_app/.flutter-plugins
+/frontend/flutter_app/.flutter-plugins-dependencies
+/frontend/flutter_app/.metadata
+/frontend/flutter_app/flutter_app.iml
+
+# Android-related files
+/frontend/flutter_app/android/.gradle/
+/frontend/flutter_app/android/local.properties
+
+# iOS/macOS-related files
+/frontend/flutter_app/ios/.symlinks/
+/frontend/flutter_app/macos/.symlinks/
+
+# Ignore the project-specific gitignore files we are consolidating
+/backend/spring_boot/.gitignore
+/frontend/flutter_app/.gitignore
