@@ -9,6 +9,7 @@
 *.swp
 *.bak
 *~
+.env
 
 # Generated build logs and temp files
 *.log
