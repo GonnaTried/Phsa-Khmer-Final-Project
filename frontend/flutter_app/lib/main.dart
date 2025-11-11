@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/presentation/pages/main_screen.dart';
+import 'package:flutter_app/screens/home/home_page.dart';
+import 'package:flutter_app/screens/profile/profile_page.dart';
+import 'package:flutter_app/screens/sell/sell_product_page.dart';
+import 'package:flutter_app/screens/seller/seller_dashboard_page.dart';
+import 'package:flutter_app/services/token_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screens/auth/login_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -14,7 +19,40 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'E-commerce App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainScreen(),
+      home: const HomePage(),
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/profile': (context) => const ProfilePage(),
+        '/dashboard': (context) => const SellerDashboardPage(),
+        '/sell': (context) => const SellProductPage(),
+      },
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: TokenService().isUserLoggedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // If logged in, go to Home Page
+        if (snapshot.data == true) {
+          // You might want to navigate to ProfilePage for testing token use
+          return const ProfilePage(); // Use ProfilePage or HomePage
+        } else {
+          // If not logged in, go to Login Page
+          return const LoginPage();
+        }
+      },
     );
   }
 }

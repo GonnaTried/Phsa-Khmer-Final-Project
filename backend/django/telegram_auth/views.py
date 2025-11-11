@@ -1,6 +1,7 @@
 import random
 import re
 import string
+import traceback
 import uuid
 from datetime import timedelta
 
@@ -218,7 +219,6 @@ class TelegramWebhookView(APIView):
         data = request.data
         chat_id = None
 
-        # CRITICAL: Outer try/except ensures a 200 is always sent back to Telegram
         try:
             if "message" not in data:
                 return Response(status=status.HTTP_200_OK)
@@ -227,19 +227,24 @@ class TelegramWebhookView(APIView):
             chat_id = str(message["chat"]["id"])
             text = message.get("text", "")
 
+            print(f"WEBHOOK DEBUG: Processing message from chat_id={chat_id}")
+
             if not text.startswith("/start"):
                 return Response(status=status.HTTP_200_OK)
 
             match = re.search(r"/start\s+([a-f0-9-]+)", text, re.IGNORECASE)
 
             # --- 1. Check User Status ---
-
-            # Case A: User is fully registered (exists in CustomUser table)
             registered_user = User.objects.filter(telegram_chat_id=chat_id).first()
+
             if registered_user:
-                # WELCOME BACK / LOGIN Flow
+                print(
+                    f"WEBHOOK DEBUG: User found in CustomUser table: {registered_user.username}"
+                )
+
+                # ... (Original Case A Login Flow - UNCHANGED) ...
+
                 if not match:
-                    # Simple /start, tell them to use the link
                     msg = f"👋 Welcome back, {registered_user.username}. Please use the specific login link from the app."
                     _send_telegram_message(chat_id, msg)
                     return Response(status=status.HTTP_200_OK)
@@ -247,26 +252,28 @@ class TelegramWebhookView(APIView):
                 one_time_code_str = match.group(1)
 
                 try:
-                    # FIX: For registered users, we remove the state_type filter.
-                    # Any valid code is treated as a login confirmation.
                     state = TelegramRegistrationState.objects.get(
                         one_time_code=one_time_code_str,
-                        # state_type=STATE_TYPE_LOGIN REMOVED
                     )
 
-                    if state.telegram_chat_id and state.telegram_chat_id != chat_id:
-                        msg = "❌ This code is already linked to a different Telegram account."
-                    elif state.is_expired():
-                        state.delete()
-                        msg = "❌ Login code expired. Please initiate login again from the app."
-                    elif state.is_verified:
-                        msg = "✅ You are already logged in. Return to the app."
-                    else:
-                        # SUCCESS: Mark the login attempt as verified
-                        state.telegram_chat_id = chat_id
-                        state.is_verified = True
-                        state.save()
-                        msg = f"✅ Logged in as {registered_user.username}. Return to the app."
+                    with transaction.atomic():
+                        if state.telegram_chat_id and state.telegram_chat_id != chat_id:
+                            msg = "❌ This code is already linked to a different Telegram account."
+                        elif state.is_expired():
+                            state.delete()
+                            msg = "❌ Login code expired. Please initiate login again from the app."
+                        elif state.is_verified:
+                            if not state.telegram_chat_id:
+                                state.telegram_chat_id = chat_id
+                                state.save(update_fields=["telegram_chat_id"])
+                            msg = "✅ You are already logged in. Return to the app."
+                        else:
+                            state.telegram_chat_id = chat_id
+                            state.is_verified = True
+                            state.save(
+                                update_fields=["telegram_chat_id", "is_verified"]
+                            )
+                            msg = f"✅ Logged in as {registered_user.username}. Return to the app."
 
                 except TelegramRegistrationState.DoesNotExist:
                     msg = "❌ Invalid login code. Please initiate login again from the app."
@@ -276,6 +283,33 @@ class TelegramWebhookView(APIView):
 
             # --- 2. Process NEW Deep Link Verification (Registration or New Login) ---
 
+            # --- CRITICAL NEW CLEANUP LOGIC ---
+
+            # If we reach here, registered_user is None.
+            # We look for *any* verified state linked to this chat_id.
+
+            stale_states = TelegramRegistrationState.objects.filter(
+                telegram_chat_id=chat_id,
+                is_verified=True,
+            )
+
+            if stale_states.exists():
+                # This chat_id has a verified state, but no corresponding CustomUser record.
+                # This implies a failed final registration, and the old state is stale/erroneous.
+                print(
+                    f"WEBHOOK DEBUG: Found {stale_states.count()} stale states for unregistered chat_id={chat_id}. Deleting them."
+                )
+
+                try:
+                    with transaction.atomic():
+                        stale_states.delete()
+                    print("WEBHOOK DEBUG: Stale states successfully deleted.")
+                except Exception as e:
+                    print(f"WEBHOOK DEBUG: Failed to delete stale states: {e}")
+                    # We still proceed, but log the error.
+
+            # --- End CRITICAL NEW CLEANUP LOGIC ---
+
             if not match:
                 msg = "Welcome! Please use the deep link from the registration page in the app."
                 _send_telegram_message(chat_id, msg)
@@ -283,17 +317,7 @@ class TelegramWebhookView(APIView):
 
             one_time_code_str = match.group(1)
 
-            # Case B & C: Handle existing PENDING or PARTIALLY REGISTERED states
-
-            # Find ANY state object that is already linked to this chat ID (Partially Registered User)
-            # We ONLY look for REGISTRATION states here, as Login states are handled by Case A
-            existing_verified_reg_state = TelegramRegistrationState.objects.filter(
-                telegram_chat_id=chat_id,
-                is_verified=True,
-                state_type=STATE_TYPE_REGISTRATION,
-            ).first()
-
-            # Find the new state created by InitiateTelegramFlowView (which is always REGISTRATION type)
+            # Find the new state created by InitiateTelegramFlowView
             try:
                 new_state = TelegramRegistrationState.objects.get(
                     one_time_code=one_time_code_str
@@ -303,52 +327,18 @@ class TelegramWebhookView(APIView):
                 _send_telegram_message(chat_id, msg)
                 return Response(status=status.HTTP_200_OK)
 
-            # RESOLUTION LOGIC:
-            if existing_verified_reg_state:
-                # User is PARTIALLY registered (Telegram verified but final step missed)
-
-                # Since InitiateTelegramFlowView always creates REGISTRATION, we skip the state_type check here.
-
-                # Use a transaction to ensure atomic transfer of the unique chat_id key.
-                try:
-                    with transaction.atomic():
-                        old_code = existing_verified_reg_state.one_time_code
-
-                        # CRITICAL FIX: Clear the unique constraint on the old object
-                        existing_verified_reg_state.telegram_chat_id = None
-                        existing_verified_reg_state.save(
-                            update_fields=["telegram_chat_id"]
-                        )
-
-                        # Now safely delete the old state
-                        existing_verified_reg_state.delete()
-
-                        print(
-                            f"DEBUG: Transferring binding from old code {old_code} to new code {one_time_code_str}."
-                        )
-
-                        # Update the NEW state with the linked chat ID and verification details.
-                        new_state.telegram_chat_id = chat_id
-                        new_state.is_verified = True
-                        new_state.save()
-
-                    msg = "✅ Binding refreshed! Return to the app to complete registration."
-                    _send_telegram_message(chat_id, msg)
-                    return Response(status=status.HTTP_200_OK)
-
-                except Exception as e:
-                    print(f"WEBHOOK TRANSFER TRANSACTION ERROR: {e}")
-                    msg = "❌ Failed to refresh binding due to a server error. Please try again."
-                    _send_telegram_message(chat_id, msg)
-                    return Response(status=status.HTTP_200_OK)
-
-            # Case C: Standard New Account Binding (First time linking chat ID)
             user_data = message.get("from", {})
             telegram_username = user_data.get("username")
             telegram_first_name = user_data.get("first_name", "")
             telegram_last_name = user_data.get("last_name", "")
 
-            # If we reach here, new_state exists.
+            # Since the cleanup logic ran above, we no longer need to check for
+            # existing_verified_reg_state (Case B) because it should have been deleted
+            # if the CustomUser record was missing.
+
+            # If the user was PARTIALLY registered (Case B), the stale state was just deleted.
+            # Therefore, we ONLY proceed to Case C (Standard New Account Binding).
+
             state = new_state
 
             if state.is_expired():
@@ -359,25 +349,28 @@ class TelegramWebhookView(APIView):
             elif state.is_verified:
                 msg = "✅ You are already verified (bound to this code). Please return to the app."
             else:
-                # Successful Binding (First time for this chat ID)
+                # Successful Binding (First time for this chat ID after cleanup)
+                try:
+                    with transaction.atomic():
+                        state.telegram_chat_id = chat_id
+                        state.telegram_username = telegram_username
+                        state.telegram_first_name = telegram_first_name
+                        state.telegram_last_name = telegram_last_name
+                        state.is_verified = True
+                        state.save()
 
-                state.telegram_chat_id = chat_id
-                state.telegram_username = telegram_username
-                state.telegram_first_name = telegram_first_name
-                state.telegram_last_name = telegram_last_name
-                state.is_verified = True
-                state.save()
-
-                # Message distinction (Always registration type now)
-                msg = "✅ Binding successful! Please go back to the app to complete registration."
+                        msg = "✅ Binding successful! Please go back to the app to complete registration."
+                except Exception as e:
+                    print(f"WEBHOOK NEW BINDING UNIQUE CONSTRAINT ERROR: {e}")
+                    msg = "❌ Verification failed. It looks like this Telegram account is already linked to another process. Please try logging in again."
 
             _send_telegram_message(chat_id, msg)
 
             return Response(status=status.HTTP_200_OK)
 
         except Exception as e:
-            # Handle Critical Webhook Errors (resilience)
             print(f"CRITICAL UNHANDLED WEBHOOK ERROR: {e}")
+            print(traceback.format_exc())
             if chat_id:
                 try:
                     _send_telegram_message(
@@ -520,17 +513,20 @@ class FinalRegistrationView(APIView):
 
 
 class UserProfileView(APIView):
-    # This ensures only users with a valid token can hit this view
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = (
-            request.user
-        )  # Django/DRF automatically sets request.user based on the token
+        user = request.user
         return Response(
             {
-                "username": user.username,
                 "user_id": user.id,
+                "username": user.username,
+                "phone_number": user.phone_number,
+                "telegram_username": (
+                    user.telegram_first_name + " " + user.telegram_last_name
+                    if user.telegram_first_name and user.telegram_last_name
+                    else user.telegram_username
+                ),
                 "telegram_linked": hasattr(user, "telegram_chat_id")
                 and bool(user.telegram_chat_id),
                 "status": "Authenticated",

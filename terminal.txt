@@ -1,0 +1,2 @@
+$env:APP_JWT_SECRET="your-dev-secret"; mvnw spring-boot:run #use in powershell
+set APP_JWT_SECRET="your-dev-secret"; mvnw spring-boot:run #use in CMD
