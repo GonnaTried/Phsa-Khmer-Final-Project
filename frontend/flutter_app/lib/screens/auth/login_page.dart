@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../services/auth_service.dart';
 import '../../../utils/responsive.dart';
-import '../home/home_page.dart';
+import '../home/home_content.dart';
 
 enum AuthState { initial, awaitingTelegram, registrationNeeded, loggedIn }
 
@@ -151,9 +151,9 @@ class _LoginPageState extends State<LoginPage> {
       _currentState = AuthState.loggedIn;
     });
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const HomePage()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (context) => HomeContent()));
   }
 
   @override

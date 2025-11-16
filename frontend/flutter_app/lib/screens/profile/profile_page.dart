@@ -1,230 +1,239 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/seller/seller_dashboard_page.dart';
+import 'package:flutter_app/utils/app_constants.dart';
+import 'package:flutter_app/utils/navigation_utils.dart';
+import 'package:flutter_app/widgets/custom_app_bar.dart';
+import 'package:flutter_app/widgets/custom_button.dart';
+
 import '../../models/user.dart';
-import '../../services/auth_service.dart';
-import '../../services/token_service.dart';
+import '../../utils/app_colors.dart';
 
-class ProfilePage extends StatefulWidget {
+// --- Mock Data ---
+final UserProfile mockUser = UserProfile(
+  userId: 1,
+  username: 'Sok',
+  phoneNumber: '+855 0123456789',
+  telegramUsername: 't.me/@sok',
+  telegramLinked: true,
+);
+
+class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  final TokenService _tokenService = TokenService();
-  late final AuthService _authService;
-
-  UserProfile? _userProfile;
-  bool _isLoading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _authService = AuthService(_tokenService);
-    _fetchProfile();
+  bool _isWebLayout(BuildContext context) {
+    return MediaQuery.of(context).size.width >= AppConstants.kTabletBreakpoint;
   }
-
-  Future<void> _fetchProfile() async {
-    if (!mounted) return;
-
-    final profile = await _authService.fetchUserProfile();
-
-    if (!mounted) return;
-
-    setState(() {
-      _isLoading = false;
-      if (profile != null) {
-        _userProfile = profile;
-        _error = null;
-      } else {
-        _error = "Could not load profile data. Please try logging in again.";
-      }
-    });
-  }
-
-  void _logout() async {
-    await _tokenService.deleteTokens();
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
-  }
-
-  void _navigateToSellProduct() {
-    Navigator.of(context).pushNamed('/sell');
-  }
-
-  void _navigateToSellerDashboard() {
-    Navigator.of(context).pushNamed('/dashboard');
-  }
-
-  // --- UI Building Methods ---
 
   @override
   Widget build(BuildContext context) {
+    bool isWeb = _isWebLayout(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Profile'),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-      ),
-      backgroundColor: Colors.grey.shade100, // Slightly off-white background
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              vertical: 20.0,
-              horizontal: 16.0,
+      appBar: isWeb
+          ? CustomAppBar(titleText: "Profile", automaticallyImplyLeading: true)
+          : null,
+
+      body: SingleChildScrollView(
+        child: Center(
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: AppConstants.kMaxContentWidth,
             ),
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _error != null
-                ? _buildErrorView()
-                : _userProfile != null
-                ? _buildProfileDetails(context)
-                : const Text('No profile data available.'),
+            padding: const EdgeInsets.all(AppConstants.kDefaultPadding),
+            child: Column(
+              children: [
+                // _buildBasicUserProfile(context),
+                CustomButton(
+                  text: mockUser.username,
+                  textAlignment: MainAxisAlignment.start,
+                  textColor: AppColors.primaryColor,
+                  textStyle: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onPressed: () {},
+                  buttonColor: AppColors.transparent,
+                  icon1: Icon(Icons.person_4),
+                  icon1Position: IconPosition.left,
+                  icon1Color: AppColors.primaryColor,
+                  icon2: Icon(Icons.arrow_right),
+                  icon2Color: AppColors.primaryColor,
+                  width: double.infinity,
+                  height: 86,
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderColor: AppColors.primaryColor,
+                ),
+                const Divider(),
+                Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 600,
+                    minWidth: 400,
+                  ),
+                  child: Column(
+                    children: [
+                      // CustomButton(
+                      //   text: "Sing in",
+                      //   textAlignment: MainAxisAlignment.start,
+                      //   onPressed: () {},
+                      //   buttonColor: AppColors.primaryColor,
+                      //   icon1: Icon(Icons.login),
+                      //   icon1Position: IconPosition.left,
+                      //   icon2: Icon(Icons.arrow_right),
+                      //   icon2Position: IconPosition.right,
+                      //   width: double.infinity,
+                      //   height: 56,
+                      //   borderRadius: BorderRadius.circular(12.0),
+                      // ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Cart",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {},
+                        buttonColor: AppColors.primaryColor,
+                        icon1: Icon(Icons.shopping_cart),
+                        icon1Position: IconPosition.left,
+                        badgeCount: 10,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Orders",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {},
+                        buttonColor: AppColors.primaryColor,
+                        icon1: Icon(Icons.shopping_bag),
+                        icon1Position: IconPosition.left,
+                        icon2: Icon(Icons.arrow_right),
+                        icon2Position: IconPosition.right,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Shipping Address",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {},
+                        buttonColor: AppColors.primaryColor,
+                        icon1: Icon(Icons.location_city),
+                        icon1Position: IconPosition.left,
+                        icon2: Icon(Icons.arrow_right),
+                        icon2Position: IconPosition.right,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Payment Methods",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {},
+                        buttonColor: AppColors.primaryColor,
+                        icon1: Icon(Icons.credit_card),
+                        icon1Position: IconPosition.left,
+                        icon2: Icon(Icons.arrow_right),
+                        icon2Position: IconPosition.right,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Wishlist",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {},
+                        buttonColor: AppColors.linkedColor,
+                        icon1: Icon(Icons.favorite),
+                        icon1Position: IconPosition.left,
+                        icon2: Icon(Icons.arrow_right),
+                        icon2Position: IconPosition.right,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Seller Dashboard",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {
+                          NavigationUtils.push(context, SellerDashboardPage());
+                        },
+                        buttonColor: AppColors.secondaryDark,
+                        icon1: Icon(Icons.sell),
+                        icon1Position: IconPosition.left,
+                        icon2: Icon(Icons.arrow_right),
+                        icon2Position: IconPosition.right,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      AppSpaces.smallVertical,
+                      CustomButton(
+                        text: "Log Out",
+                        textAlignment: MainAxisAlignment.start,
+                        onPressed: () {},
+                        buttonColor: AppColors.danger,
+                        icon1: Icon(Icons.exit_to_app),
+                        icon1Position: IconPosition.left,
+                        icon2: Icon(Icons.arrow_right),
+                        icon2Position: IconPosition.right,
+                        width: double.infinity,
+                        height: 56,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildErrorView() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _error!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red, fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _logout,
-              child: const Text('Go to Login'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildBasicUserProfile(BuildContext context) {
+    bool isWeb = _isWebLayout(context);
 
-  Widget _buildProfileDetails(BuildContext context) {
-    final telegramStatus = _userProfile!.telegramLinked
-        ? 'Linked'
-        : 'Not Linked';
-    final telegramLinkColor = _userProfile!.telegramLinked
-        ? Colors.green.shade600
-        : Colors.red.shade600;
-
-    return Card(
-      elevation:
-          0, // CRITICAL FIX: Set elevation to 0 to remove the floating shadow
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return InkWell(
+      onTap: () {},
       child: Container(
-        // Use a Container inside the Card for inner background color/padding
-        color: Colors
-            .white, // Ensure a clean white background inside the card area
-        padding: const EdgeInsets.all(30.0),
+        constraints: isWeb
+            ? const BoxConstraints(
+                minWidth: 600,
+                maxWidth: AppConstants.kMaxContentWidth,
+              )
+            : const BoxConstraints(
+                minWidth: 400,
+                maxWidth: AppConstants.kMaxContentWidth,
+              ),
+        padding: const EdgeInsets.all(AppConstants.kDefaultPadding),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.primaryColor),
+          borderRadius: BorderRadius.circular(AppConstants.kBorderRadius),
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome Header (Blue/Primary Color for contrast)
             Text(
-              'Welcome, ${_userProfile!.username}',
-              style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+              mockUser.username,
+              style: TextStyle(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor, // Use primary color
+                color: AppColors.primaryColor,
               ),
-              textAlign: TextAlign.start, // Align to start (left)
+              textAlign: TextAlign.left,
             ),
-            const Divider(height: 30, thickness: 1.0), // Reduced thickness
-            // Info Rows
-            _buildInfoRow('PHSA Username:', _userProfile!.username),
-            _buildInfoRow('PHSA Phone Number:', _userProfile!.phoneNumber),
-            _buildInfoRow('Telegram Username:', _userProfile!.telegramUsername),
-            _buildInfoRow(
-              'Telegram Account Status:',
-              telegramStatus,
-              valueColor: telegramLinkColor,
-            ),
-
-            const SizedBox(height: 40),
-
-            // --- NEW: Sell Product Button ---
-            ElevatedButton.icon(
-              onPressed: _navigateToSellerDashboard,
-              icon: const Icon(Icons.sell),
-              label: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 14.0),
-                child: Text('Seller Dashboard', style: TextStyle(fontSize: 18)),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(
-                  context,
-                ).primaryColor, // Use app primary color (blue)
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 2,
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            // Logout Button
-            ElevatedButton.icon(
-              onPressed: _logout,
-              icon: const Icon(Icons.logout),
-              label: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 14.0),
-                child: Text('Logout', style: TextStyle(fontSize: 18)),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade700,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 2,
-              ),
+            AppSpaces.smallVertical,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Phone Number: ${mockUser.phoneNumber}"),
+                Text("Telegram Username: ${mockUser.telegramUsername}"),
+              ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value, {Color? valueColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 180,
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: valueColor ?? Colors.black87,
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

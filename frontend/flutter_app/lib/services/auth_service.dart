@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 
 // const String _baseUrl = 'http://127.0.0.1:8000/api/auth';
 // const String _baseUrl = 'http://10.0.2.2:8000/api/auth'; // Android Emulator
-const String _baseUrl = 'https://your-doamain-here/api/auth';
+const String _baseUrl =
+    'https://tinderlike-bullheadedly-lillianna.ngrok-free.dev/api/auth';
 
 // --- Auth Result Model ---
 
@@ -60,8 +61,9 @@ class AuthService {
 
   Future<AuthResult> checkAuthStatus(String code) async {
     final url = Uri.parse('$_baseUrl/check/?code=$code');
+    final headers = {'ngrok-skip-browser-warning': 'true'};
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
 
       print('--- Polling Check Status ---');
       print('HTTP Status Code: ${response.statusCode}');

@@ -242,8 +242,6 @@ class TelegramWebhookView(APIView):
                     f"WEBHOOK DEBUG: User found in CustomUser table: {registered_user.username}"
                 )
 
-                # ... (Original Case A Login Flow - UNCHANGED) ...
-
                 if not match:
                     msg = f"👋 Welcome back, {registered_user.username}. Please use the specific login link from the app."
                     _send_telegram_message(chat_id, msg)
@@ -263,11 +261,18 @@ class TelegramWebhookView(APIView):
                             state.delete()
                             msg = "❌ Login code expired. Please initiate login again from the app."
                         elif state.is_verified:
+
                             if not state.telegram_chat_id:
+                                TelegramRegistrationState.objects.filter(
+                                    telegram_chat_id=chat_id,
+                                ).delete()
                                 state.telegram_chat_id = chat_id
                                 state.save(update_fields=["telegram_chat_id"])
                             msg = "✅ You are already logged in. Return to the app."
                         else:
+                            TelegramRegistrationState.objects.filter(
+                                telegram_chat_id=chat_id,
+                            ).delete()
                             state.telegram_chat_id = chat_id
                             state.is_verified = True
                             state.save(
@@ -290,7 +295,6 @@ class TelegramWebhookView(APIView):
 
             stale_states = TelegramRegistrationState.objects.filter(
                 telegram_chat_id=chat_id,
-                is_verified=True,
             )
 
             if stale_states.exists():
@@ -302,7 +306,9 @@ class TelegramWebhookView(APIView):
 
                 try:
                     with transaction.atomic():
-                        stale_states.delete()
+                        TelegramRegistrationState.objects.filter(
+                            telegram_chat_id=chat_id,
+                        ).delete()
                     print("WEBHOOK DEBUG: Stale states successfully deleted.")
                 except Exception as e:
                     print(f"WEBHOOK DEBUG: Failed to delete stale states: {e}")

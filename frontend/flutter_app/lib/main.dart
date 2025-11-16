@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/home/home_page.dart';
+import 'package:flutter_app/screens/home/home_content.dart';
 import 'package:flutter_app/screens/profile/profile_page.dart';
-import 'package:flutter_app/screens/sell/sell_product_page.dart';
 import 'package:flutter_app/screens/seller/seller_dashboard_page.dart';
 import 'package:flutter_app/services/token_service.dart';
+import 'package:flutter_app/utils/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/auth/login_page.dart';
 
@@ -18,13 +18,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'E-commerce App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomePage(),
+      theme: AppTheme.lightTheme,
+      home: MobileShell(),
       routes: {
         '/login': (context) => const LoginPage(),
         '/profile': (context) => const ProfilePage(),
-        '/dashboard': (context) => const SellerDashboardPage(),
-        '/sell': (context) => const SellProductPage(),
+
+        // Seller
+        '/seller_dashboard': (context) => const SellerDashboardPage(),
       },
     );
   }
