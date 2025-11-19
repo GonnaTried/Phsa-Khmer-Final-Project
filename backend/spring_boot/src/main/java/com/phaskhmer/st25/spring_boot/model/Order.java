@@ -1,7 +1,5 @@
-package com.phaskhmer.st25.spring_boot.model.order;
+package com.phaskhmer.st25.spring_boot.model;
 
-import com.phaskhmer.st25.spring_boot.model.Customer;
-import com.phaskhmer.st25.spring_boot.model.ShippingAddress;
 import jakarta.persistence.*;
 import lombok.Data;
 

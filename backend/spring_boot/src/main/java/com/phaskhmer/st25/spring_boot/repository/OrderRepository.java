@@ -2,7 +2,7 @@ package com.phaskhmer.st25.spring_boot.repository;
 
 
 import com.phaskhmer.st25.spring_boot.model.Customer;
-import com.phaskhmer.st25.spring_boot.model.order.Order;
+import com.phaskhmer.st25.spring_boot.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

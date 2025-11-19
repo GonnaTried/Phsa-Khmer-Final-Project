@@ -1,6 +1,5 @@
-package com.phaskhmer.st25.spring_boot.model.order;
+package com.phaskhmer.st25.spring_boot.model;
 
-import com.phaskhmer.st25.spring_boot.model.listing.Item;
 import jakarta.persistence.*;
 import lombok.Data;
 

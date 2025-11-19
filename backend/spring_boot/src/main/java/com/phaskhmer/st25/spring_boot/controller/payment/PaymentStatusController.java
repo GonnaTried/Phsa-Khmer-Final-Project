@@ -1,7 +1,6 @@
 package com.phaskhmer.st25.spring_boot.controller.payment;
 
-import com.phaskhmer.st25.spring_boot.model.order.Order;
-import com.phaskhmer.st25.spring_boot.model.order.OrderStatus;
+import com.phaskhmer.st25.spring_boot.model.OrderStatus;
 import com.phaskhmer.st25.spring_boot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

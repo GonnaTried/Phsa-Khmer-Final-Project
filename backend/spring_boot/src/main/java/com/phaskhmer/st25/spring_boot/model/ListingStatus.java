@@ -1,4 +1,4 @@
-package com.phaskhmer.st25.spring_boot.model.listing;
+package com.phaskhmer.st25.spring_boot.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

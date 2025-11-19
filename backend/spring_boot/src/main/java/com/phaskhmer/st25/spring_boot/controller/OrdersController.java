@@ -1,6 +1,6 @@
 package com.phaskhmer.st25.spring_boot.controller;
 
-import com.phaskhmer.st25.spring_boot.model.order.Order;
+import com.phaskhmer.st25.spring_boot.model.Order;
 import com.phaskhmer.st25.spring_boot.repository.CustomerRepository;
 import com.phaskhmer.st25.spring_boot.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;

@@ -14,9 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.phaskhmer.st25.spring_boot.model.Category;
-import com.phaskhmer.st25.spring_boot.model.listing.Item;
-import com.phaskhmer.st25.spring_boot.model.listing.Listing;
-import com.phaskhmer.st25.spring_boot.model.listing.ListingStatus;
+import com.phaskhmer.st25.spring_boot.model.Item;
+import com.phaskhmer.st25.spring_boot.model.Listing;
+import com.phaskhmer.st25.spring_boot.model.ListingStatus;
 import com.phaskhmer.st25.spring_boot.repository.CategoryRepository;
 import com.phaskhmer.st25.spring_boot.repository.ListingRepository;
 import com.phaskhmer.st25.spring_boot.repository.ListingStatusRepository;
