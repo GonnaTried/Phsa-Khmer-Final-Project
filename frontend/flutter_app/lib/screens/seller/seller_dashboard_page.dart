@@ -20,7 +20,7 @@ class SellerDashboardPage extends StatelessWidget {
     // menuItems
     final List<TableItemData> menuItems = [
       TableItemData(
-        leadingIcon: const Icon(
+        leadingWidget: const Icon(
           Icons.shopping_bag_outlined,
           color: AppColors.primaryColor,
         ),
@@ -30,7 +30,7 @@ class SellerDashboardPage extends StatelessWidget {
         onTap: null,
       ),
       TableItemData(
-        leadingIcon: const Icon(
+        leadingWidget: const Icon(
           Icons.delivery_dining,
           color: AppColors.primaryColor,
         ),
@@ -40,7 +40,7 @@ class SellerDashboardPage extends StatelessWidget {
         onTap: null,
       ),
       TableItemData(
-        leadingIcon: const Icon(
+        leadingWidget: const Icon(
           Icons.pending_actions,
           color: AppColors.primaryColor,
         ),
@@ -50,14 +50,14 @@ class SellerDashboardPage extends StatelessWidget {
         onTap: null,
       ),
       TableItemData(
-        leadingIcon: const Icon(Icons.check_circle, color: AppColors.success),
+        leadingWidget: const Icon(Icons.check_circle, color: AppColors.success),
         primaryText: 'Confirmed Delivery',
         secondaryText: 'Last Delivery: 25/Oct/2025',
         rightText: "View Details",
         onTap: null,
       ),
       TableItemData(
-        leadingIcon: const Icon(Icons.manage_search, color: AppColors.info),
+        leadingWidget: const Icon(Icons.manage_search, color: AppColors.info),
         primaryText: 'Manage Listing',
         rightText: "View Details",
         onTap: (BuildContext context) {
@@ -68,21 +68,24 @@ class SellerDashboardPage extends StatelessWidget {
         },
       ),
       TableItemData(
-        leadingIcon: const Icon(Icons.drafts, color: AppColors.secondaryColor),
+        leadingWidget: const Icon(
+          Icons.drafts,
+          color: AppColors.secondaryColor,
+        ),
         primaryText: 'Draft Listing',
         secondaryText: 'Ready to publish',
         badgeCount: 15,
         onTap: null,
       ),
       TableItemData(
-        leadingIcon: const Icon(Icons.money, color: AppColors.secondaryLight),
+        leadingWidget: const Icon(Icons.money, color: AppColors.secondaryLight),
         primaryText: 'Payout Settings',
         secondaryText: 'Lifetime Earnings: 1000\$',
         rightText: '200\$',
         onTap: null,
       ),
       TableItemData(
-        leadingIcon: const Icon(
+        leadingWidget: const Icon(
           Icons.phone_in_talk,
           color: AppColors.textSecondary,
         ),

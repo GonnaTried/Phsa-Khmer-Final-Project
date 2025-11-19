@@ -1,32 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/app_colors.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/app_colors.dart';
+
 class TableItemData {
-  final Widget? leadingIcon;
+  final Widget? leadingWidget;
   final String? primaryText;
   final String? secondaryText;
   final String? rightText;
   final int? badgeCount;
   final Function(BuildContext context)? onTap;
 
+  final Color? primaryTextColor;
+  final Color? secondaryTextColor;
+  final Color? rightTextColor;
+  final Color? badgeColorOverride;
+  final Color? badgeTextColorOverride;
+
   TableItemData({
-    this.leadingIcon,
+    this.leadingWidget,
     this.primaryText,
     this.secondaryText,
     this.rightText,
     this.badgeCount,
     this.onTap,
+    this.primaryTextColor,
+    this.secondaryTextColor,
+    this.rightTextColor,
+    this.badgeColorOverride,
+    this.badgeTextColorOverride,
   });
 }
 
 class EcomTableItem extends StatelessWidget {
   final TableItemData data;
 
-  final Color titleColor;
-  final Color subtitleColor;
-  final Color rightTextColor;
-  final Color badgeColor;
-  final Color badgeTextColor;
+  final Color defaultTitleColor;
+  final Color defaultSubtitleColor;
+  final Color defaultRightTextColor;
+  final Color defaultBadgeColor;
+  final Color defaultBadgeTextColor;
+
   final double height;
   final double titleFontSize;
   final double subtitleFontSize;
@@ -34,15 +49,23 @@ class EcomTableItem extends StatelessWidget {
   const EcomTableItem({
     super.key,
     required this.data,
-    this.titleColor = AppColors.textPrimary,
-    this.subtitleColor = AppColors.textSecondary,
-    this.rightTextColor = AppColors.textPrimary,
-    this.badgeColor = AppColors.danger,
-    this.badgeTextColor = AppColors.white,
+    this.defaultTitleColor = AppColors.textPrimary,
+    this.defaultSubtitleColor = AppColors.textSecondary,
+    this.defaultRightTextColor = AppColors.textPrimary,
+    this.defaultBadgeColor = AppColors.danger,
+    this.defaultBadgeTextColor = AppColors.white,
     this.height = 70.0,
     this.titleFontSize = 16.0,
     this.subtitleFontSize = 12.0,
   });
+
+  Color get _primaryTextColor => data.primaryTextColor ?? defaultTitleColor;
+  Color get _secondaryTextColor =>
+      data.secondaryTextColor ?? defaultSubtitleColor;
+  Color get _rightTextColor => data.rightTextColor ?? defaultRightTextColor;
+  Color get _badgeColor => data.badgeColorOverride ?? defaultBadgeColor;
+  Color get _badgeTextColor =>
+      data.badgeTextColorOverride ?? defaultBadgeTextColor;
 
   Widget _buildBadge() {
     if (data.badgeCount == null || data.badgeCount! <= 0) {
@@ -55,7 +78,7 @@ class EcomTableItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
-        color: badgeColor,
+        color: _badgeColor, // Use custom color
         borderRadius: BorderRadius.circular(50),
       ),
       constraints: const BoxConstraints(
@@ -68,7 +91,7 @@ class EcomTableItem extends StatelessWidget {
       child: Text(
         countText,
         style: TextStyle(
-          color: badgeTextColor,
+          color: _badgeTextColor,
           fontSize: 12,
           fontWeight: FontWeight.bold,
           height: 1.0,
@@ -96,8 +119,8 @@ class EcomTableItem extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (data.leadingIcon != null) ...[
-                data.leadingIcon!,
+              if (data.leadingWidget != null) ...[
+                data.leadingWidget!,
                 const SizedBox(width: 12),
               ],
 
@@ -112,7 +135,7 @@ class EcomTableItem extends StatelessWidget {
                         style: TextStyle(
                           fontSize: titleFontSize,
                           fontWeight: FontWeight.bold,
-                          color: titleColor,
+                          color: _primaryTextColor, // Use custom color
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -122,7 +145,7 @@ class EcomTableItem extends StatelessWidget {
                         data.secondaryText!,
                         style: TextStyle(
                           fontSize: subtitleFontSize,
-                          color: subtitleColor,
+                          color: _secondaryTextColor, // Use custom color
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -143,7 +166,7 @@ class EcomTableItem extends StatelessWidget {
                       data.rightText!,
                       style: TextStyle(
                         fontSize: titleFontSize,
-                        color: rightTextColor,
+                        color: _rightTextColor, // Use custom color
                       ),
                     ),
 

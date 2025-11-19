@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_app/models/user.dart';
+import 'package:flutter_app/models/user_profile.dart';
 import 'package:flutter_app/services/token_service.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +17,7 @@ class AuthResult {
   final bool? registered;
   final String? accessToken;
   final String? refreshToken;
+  final int? expiresInSeconds;
 
   AuthResult({
     required this.status,
@@ -24,6 +25,7 @@ class AuthResult {
     this.registered,
     this.accessToken,
     this.refreshToken,
+    this.expiresInSeconds,
   });
 
   factory AuthResult.fromJson(Map<String, dynamic> json) {
@@ -170,14 +172,75 @@ class AuthService {
         return UserProfile.fromJson(data);
       } else if (response.statusCode == 401) {
         // Token expired or invalid. Need re-login or token refresh later.
-        print('Profile fetch failed: Unauthorized (401)');
+        // print('Profile fetch failed: Unauthorized (401)');
         return null;
       } else {
-        print('Profile fetch failed with status: ${response.statusCode}');
+        // print('Profile fetch failed with status: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      print('Error fetching profile: $e');
+      // print('Error fetching profile: $e');
+      return null;
+    }
+  }
+
+  Future<UserProfile?> updateUserProfile({
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+  }) async {
+    final url = Uri.parse('$_baseUrl/profile/');
+
+    final Map<String, dynamic> body = {};
+    if (firstName != null) body['first_name'] = firstName;
+    if (lastName != null) body['last_name'] = lastName;
+    if (phoneNumber != null) body['phone_number'] = phoneNumber;
+
+    if (body.isEmpty) {
+      // print('Update failed: No fields provided to update.');
+      return null;
+    }
+
+    // print('--- Update Profile Request Body ---');
+    // print('Body Map: $body');
+    // print('JSON Encoded Body: ${jsonEncode(body)}');
+    // print('-----------------------------------');
+
+    try {
+      final headers = await _getHeaders(authorized: true);
+
+      final response = await http.patch(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      // print('--- Profile Update Status ---');
+      // print('HTTP Status Code: ${response.statusCode}');
+      // print('Raw Response Body: ${response.body}');
+      // print('--------------------------');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return UserProfile.fromJson(data);
+      } else if (response.statusCode == 401) {
+        // print('Profile update failed: Unauthorized (401) - Token invalid.');
+        return null;
+      } else if (response.statusCode == 400) {
+        final data = jsonDecode(response.body);
+        // print(
+        //   'Profile update failed: Bad Request (400) - ${data['message'] ?? response.body}',
+        // );
+        return null;
+      } else {
+        // print('Profile update failed with status: ${response.statusCode}');
+        return null;
+      }
+    } on SocketException {
+      // print('Profile update error: Network connection issue.');
+      return null;
+    } catch (e) {
+      // print('General Error updating profile: $e');
       return null;
     }
   }

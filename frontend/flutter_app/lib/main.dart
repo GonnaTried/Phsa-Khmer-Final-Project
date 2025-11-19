@@ -1,31 +1,168 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/home/home_content.dart';
+import 'package:flutter_app/api/private/cart_api_service.dart';
+import 'package:flutter_app/providers/auth_provider.dart';
+import 'package:flutter_app/providers/cart_provider.dart';
+import 'package:flutter_app/providers/listing_provider.dart';
+import 'package:flutter_app/screens/home/home_page.dart';
+import 'package:flutter_app/screens/payment/payment_cancel_page.dart';
+import 'package:flutter_app/screens/payment/payment_polling_page.dart';
+import 'package:flutter_app/screens/payment/payment_success_page.dart';
 import 'package:flutter_app/screens/profile/profile_page.dart';
 import 'package:flutter_app/screens/seller/seller_dashboard_page.dart';
+import 'package:flutter_app/services/auth_service.dart';
+import 'package:flutter_app/services/listing_service.dart';
 import 'package:flutter_app/services/token_service.dart';
 import 'package:flutter_app/utils/app_theme.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
+// import 'package:uni_links/uni_links.dart';
 import 'screens/auth/login_page.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider(create: (_) => TokenService()),
+        Provider(
+          create: (context) => AuthService(context.read<TokenService>()),
+        ),
+        Provider(
+          create: (context) => CartApiService(context.read<TokenService>()),
+        ),
+        Provider(
+          create: (context) => ListingService(context.read<TokenService>()),
+        ),
+        Provider(
+          create: (context) => CartApiService(context.read<TokenService>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(
+            context.read<TokenService>(),
+            context.read<AuthService>(),
+          ),
+        ),
+        ChangeNotifierProvider(create: (_) => ListingProvider()),
+
+        ChangeNotifierProxyProvider<AuthProvider, CartProvider>(
+          create: (context) => CartProvider(
+            context.read<AuthProvider>(),
+            context.read<CartApiService>(),
+          ),
+          update: (context, auth, previousCart) {
+            if (previousCart == null)
+              return CartProvider(auth, context.read<CartApiService>());
+
+            previousCart.update(auth);
+
+            if (auth.isLoggedIn &&
+                previousCart.cart == null &&
+                !previousCart.isLoading) {
+              previousCart.fetchCart();
+            } else if (!auth.isLoggedIn && previousCart.cart != null) {
+              previousCart.clearCart();
+            }
+
+            return previousCart;
+          },
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize deep link listeners when the app starts
+    // _initUniLinks();
+  }
+
+  void _handleDeepLink(String deepLink) {
+    final uri = Uri.parse(deepLink);
+    final nav = navigatorKey.currentState;
+
+    if (uri.scheme == 'phsakhmer') {
+      if (uri.pathSegments.contains('checkout') && nav != null) {
+        final sessionId = uri.queryParameters['session_id'];
+
+        if (sessionId != null) {
+          nav.pushNamedAndRemoveUntil(
+            '/payment_polling',
+            (route) => false,
+            arguments: sessionId,
+          );
+        }
+      }
+    }
+  }
+
+  // Set up uni_links listeners
+  // Future<void> _initUniLinks() async {
+  //   try {
+  //     final initialLink = await getInitialLink();
+  //     if (initialLink != null) {
+  //       _handleDeepLink(initialLink);
+  //     }
+  //   } catch (e) {
+  //     print("Failed to get initial link: $e");
+  //   }
+
+  //   getUriLinksStream().listen(
+  //     (Uri? uri) {
+  //       if (uri != null) {
+  //         _handleDeepLink(uri.toString());
+  //       }
+  //     },
+  //     onError: (err) {
+  //       print("Deep link stream error: $err");
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'E-commerce App',
       theme: AppTheme.lightTheme,
-      home: MobileShell(),
+      navigatorKey: navigatorKey,
+      home: HomePage(),
       routes: {
         '/login': (context) => const LoginPage(),
         '/profile': (context) => const ProfilePage(),
-
-        // Seller
         '/seller_dashboard': (context) => const SellerDashboardPage(),
+
+        '/payment_cancel': (context) => const PaymentCancelPage(),
+      },
+      onGenerateRoute: (settings) {
+        final uri = Uri.parse(settings.name!);
+        if (settings.name!.startsWith('/checkout/status')) {
+          final sessionId = uri.queryParameters['session_id'];
+
+          if (sessionId != null) {
+            return MaterialPageRoute(
+              builder: (context) => PaymentPollingPage(sessionId: sessionId),
+            );
+          }
+        }
+        if (settings.name == '/payment_polling') {
+          final sessionId = settings.arguments as String?;
+          if (sessionId != null) {
+            return MaterialPageRoute(
+              builder: (context) => PaymentPollingPage(sessionId: sessionId),
+            );
+          }
+        }
+        return null;
       },
     );
   }

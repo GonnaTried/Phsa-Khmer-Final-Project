@@ -1,33 +1,35 @@
 package com.phaskhmer.st25.spring_boot.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.phaskhmer.st25.spring_boot.model.Customer;
 import com.phaskhmer.st25.spring_boot.model.ShippingAddress;
 import com.phaskhmer.st25.spring_boot.repository.CustomerRepository;
 import com.phaskhmer.st25.spring_boot.repository.ShippingAddressRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class CustomerService {
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    private final ShippingAddressRepository addressRepository;
 
-    @Autowired
-    private ShippingAddressRepository addressRepository;
+    public CustomerService(CustomerRepository customerRepository, ShippingAddressRepository addressRepository) {
+        this.customerRepository = customerRepository;
+        this.addressRepository = addressRepository;
+    }
 
     @Transactional
     public Customer ensureCustomerExists(Long userId) {
-        return customerRepository.findById(userId)
-                .orElseGet(() -> {
-                    Customer newCustomer = new Customer();
-                    newCustomer.setId(userId);
-                    return customerRepository.save(newCustomer);
-                });
+        return customerRepository.findById(userId).orElseGet(() -> {
+            Customer newCustomer = new Customer();
+            newCustomer.setId(userId);
+            newCustomer.setPhone(null);
+            newCustomer.setIsSeller(false);
+
+            return customerRepository.save(newCustomer);
+        });
     }
 
     // --- Shipping Address CRUD ---
@@ -37,7 +39,7 @@ public class CustomerService {
 
     @Transactional
     public ShippingAddress saveAddress(Long customerId, ShippingAddress address) {
-        if (address.getIsDefault() != null && address.getIsDefault()) {
+        if (address.getIsDefault()) {
             addressRepository.findByCustomerIdAndIsDefaultTrue(customerId)
                     .ifPresent(oldDefault -> {
                         oldDefault.setIsDefault(false);
@@ -58,5 +60,9 @@ public class CustomerService {
             throw new SecurityException("Unauthorized access to address.");
         }
         addressRepository.delete(address);
+    }
+
+    public Customer getSeller(Long sellerId) {
+        return ensureCustomerExists(sellerId);
     }
 }

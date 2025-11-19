@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/cart/cart_page.dart';
+import 'package:flutter_app/utils/navigation_utils.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_constants.dart';
 import '../utils/app_styles.dart';
@@ -143,7 +145,9 @@ class CartActionButton extends StatelessWidget {
         backgroundColor: AppColors.danger,
         child: const Icon(Icons.shopping_cart_outlined),
       ),
-      onPressed: () {},
+      onPressed: () {
+        NavigationUtils.push(context, const CartPage());
+      },
     );
   }
 }

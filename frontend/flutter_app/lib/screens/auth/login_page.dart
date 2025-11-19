@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/auth_provider.dart';
 import 'package:flutter_app/services/token_service.dart';
+import 'package:flutter_app/widgets/custom_app_bar.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:provider/provider.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/responsive.dart';
-import '../home/home_content.dart';
+import '../home/home_page.dart';
 
 enum AuthState { initial, awaitingTelegram, registrationNeeded, loggedIn }
 
@@ -142,9 +144,19 @@ class _LoginPageState extends State<LoginPage> {
 
   // --- Final Step: Login Success ---
   void _handleSuccessfulLogin(AuthResult result) async {
-    if (result.accessToken != null && result.refreshToken != null) {
-      await _tokenService.saveTokens(result.accessToken!, result.refreshToken!);
+    const int defaultAccessTokenLifespan = 3600;
+    if (result.accessToken == null || result.refreshToken == null) {
+      setState(() {
+        _statusMessage = "Authentication error: Missing token or expiry data.";
+        _currentState = AuthState.initial;
+      });
+      return;
     }
+    await context.read<AuthProvider>().loginSuccess(
+      result.accessToken!,
+      result.refreshToken!,
+      defaultAccessTokenLifespan,
+    );
 
     _checkTimer?.cancel();
     setState(() {
@@ -153,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
 
     Navigator.of(
       context,
-    ).pushReplacement(MaterialPageRoute(builder: (context) => HomeContent()));
+    ).pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
   }
 
   @override
@@ -168,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+      appBar: CustomAppBar(),
       body: Center(
         child: Responsive.build(
           context,

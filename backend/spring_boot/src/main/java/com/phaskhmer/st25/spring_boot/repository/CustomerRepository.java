@@ -11,4 +11,5 @@ import com.phaskhmer.st25.spring_boot.model.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByPhone(String phone_number);
+
 }

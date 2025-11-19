@@ -135,4 +135,23 @@ class NavigationUtils {
       },
     );
   }
+
+  static Future<T?> showCustomPopup<T extends Object?>({
+    required BuildContext context,
+    required Widget contentWidget,
+    bool barrierDismissible = true,
+  }) {
+    return showDialog<T>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConstants.kBorderRadius),
+          ),
+          child: contentWidget,
+        );
+      },
+    );
+  }
 }

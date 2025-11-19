@@ -8,6 +8,9 @@ class AppConstants {
 
   // --- API / SERVICE CONFIGURATION ---
   static const String kBaseUrl = 'https://api.yourecomsite.com/v1/';
+  static const String kBasePaywayUrl =
+      'https://checkout-sandbox.payway.com.kh/';
+  static const String kApiHostSpring = 'https://lauderdale-surround-lender-forwarding.trycloudflare.com';
 
   // --- ROUTE NAMES ---
   static const String routeHome = '/';
@@ -31,6 +34,7 @@ class AppConstants {
 
   // Consistent elevation for shadows
   static const double kDefaultElevation = 4.0;
+  static const double kSearchWidth = 20.0;
 
   // --- UI DIMENSIONS ---
 

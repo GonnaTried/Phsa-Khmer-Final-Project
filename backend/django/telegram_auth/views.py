@@ -25,6 +25,7 @@ from .models import (
     STATE_TYPE_REGISTRATION,
     TelegramRegistrationState,
 )
+from .serializers import UserSerializer
 
 User = get_user_model()
 
@@ -488,7 +489,7 @@ class FinalRegistrationView(APIView):
 
             # Construct the Telegram link (requires models.py update)
             if hasattr(user, "telegram_profile_link") and state.telegram_username:
-                user.telegram_profile_link = f"https://t.me/{state.telegram_username}"
+                user.telegram_profile_link = f"https.t.me/{state.telegram_username}"
             elif hasattr(user, "telegram_profile_link"):
                 user.telegram_profile_link = None
 
@@ -533,11 +534,29 @@ class UserProfileView(APIView):
                     if user.telegram_first_name and user.telegram_last_name
                     else user.telegram_username
                 ),
+                "first_name": user.first_name,
+                "last_name": user.last_name,
                 "telegram_linked": hasattr(user, "telegram_chat_id")
                 and bool(user.telegram_chat_id),
                 "status": "Authenticated",
             }
         )
+
+    def put(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # OTP

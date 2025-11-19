@@ -37,7 +37,7 @@ class CustomUser(AbstractUser):
 
     # --- Custom Fields for E-commerce and Telegram Auth ---
 
-    phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, unique=True, blank=False, null=False, default="no number")
 
     telegram_chat_id = models.CharField(
         max_length=50, unique=True, blank=True, null=True
@@ -104,27 +104,6 @@ class TelegramRegistrationState(models.Model):
 
     def __str__(self):
         return f"State: {self.one_time_code} (Verified: {self.is_verified})"
-
-
-class OTP(models.Model):
-    phone_number = models.CharField(max_length=15, db_index=True)
-    code = models.CharField(max_length=6)
-    expires_at = models.DateTimeField()
-    is_used = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="otps",
-        null=True,
-        blank=True,
-    )
-
-    def is_expired(self):
-        return self.expires_at < timezone.now()
-
-    def __str__(self):
-        return f"OTP for {self.phone_number}"
 
 
 class OTP(models.Model):
