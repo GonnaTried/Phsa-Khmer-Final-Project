@@ -1,10 +1,12 @@
-package com.phaskhmer.st25.spring_boot.model;
+package com.phaskhmer.st25.spring_boot.model.order;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import com.phaskhmer.st25.spring_boot.model.Category;
+import com.phaskhmer.st25.spring_boot.model.Customer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;

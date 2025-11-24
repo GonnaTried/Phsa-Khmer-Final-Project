@@ -1,4 +1,4 @@
-package com.phaskhmer.st25.spring_boot.model;
+package com.phaskhmer.st25.spring_boot.model.order;
 
 import java.math.BigDecimal;
 

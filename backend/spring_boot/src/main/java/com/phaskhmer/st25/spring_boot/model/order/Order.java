@@ -1,5 +1,6 @@
 package com.phaskhmer.st25.spring_boot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
     @Id
@@ -32,14 +34,14 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private OrderStatus status = OrderStatus.PENDING; // Initial status
+    private OrderStatus status = OrderStatus.PENDING;
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
     @Column(name = "stripe_session_id")
-    private String stripeSessionId; // Crucial for linking to Stripe
+    private String stripeSessionId;
 
     @Column(name = "payment_intent_id")
-    private String paymentIntentId; // Crucial for fulfillment/refunds
+    private String paymentIntentId;
 }

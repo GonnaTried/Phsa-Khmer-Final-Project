@@ -1,8 +1,8 @@
 package com.phaskhmer.st25.spring_boot.controller;
 
 import com.phaskhmer.st25.spring_boot.model.cart.Cart;
-import com.phaskhmer.st25.spring_boot.model.Order;
-import com.phaskhmer.st25.spring_boot.model.OrderStatus;
+import com.phaskhmer.st25.spring_boot.model.order.Order;
+import com.phaskhmer.st25.spring_boot.model.order.OrderStatus;
 import com.phaskhmer.st25.spring_boot.repository.CartRepository;
 import com.phaskhmer.st25.spring_boot.repository.OrderRepository;
 import com.phaskhmer.st25.spring_boot.service.StripeService;
