@@ -10,7 +10,10 @@ class AppConstants {
   static const String kBaseUrl = 'https://api.yourecomsite.com/v1/';
   static const String kBasePaywayUrl =
       'https://checkout-sandbox.payway.com.kh/';
-  static const String kApiHostSpring = 'https://lauderdale-surround-lender-forwarding.trycloudflare.com';
+  static const String kApiHostSpring =
+      'https://exercise-deborah-roommates-demand.trycloudflare.com';
+  static const String kApiHostDjango =
+      'https://tinderlike-bullheadedly-lillianna.ngrok-free.dev';
 
   // --- ROUTE NAMES ---
   static const String routeHome = '/';

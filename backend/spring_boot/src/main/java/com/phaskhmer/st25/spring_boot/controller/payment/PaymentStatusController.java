@@ -1,6 +1,7 @@
 package com.phaskhmer.st25.spring_boot.controller.payment;
 
-import com.phaskhmer.st25.spring_boot.model.OrderStatus;
+import com.phaskhmer.st25.spring_boot.model.order.Order;
+import com.phaskhmer.st25.spring_boot.model.order.OrderStatus;
 import com.phaskhmer.st25.spring_boot.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,11 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class PaymentStatusController {
 
     @Autowired
-    private OrderRepository orderRepository; // Use the actual repository
+    private OrderRepository orderRepository;
 
     public static final String STATUS_PENDING = "PENDING";
     public static final String STATUS_SUCCESS = "SUCCESS"; // Map to PAID
@@ -43,19 +46,31 @@ public class PaymentStatusController {
     }
 
     private String lookUpOrderStatus(String sessionId) {
-        // Assume you add findByStripeSessionId(String) to your OrderRepository
-        return orderRepository.findByStripeSessionId(sessionId)
-                .map(order -> mapOrderStatusToClientStatus(order.getStatus()))
-                .orElse(STATUS_NOT_FOUND);
-    }
 
-    // Helper to map internal enum to simple string status for Flutter
-    private String mapOrderStatusToClientStatus(OrderStatus internalStatus) {
-        return switch (internalStatus) {
-            case PAID -> STATUS_SUCCESS;
-            case PENDING -> STATUS_PENDING;
-            case FAILED, CANCELLED -> STATUS_FAILED;
-            default -> STATUS_PENDING; // Treat other statuses as pending fulfillment for now
-        };
+        // 1. Retrieve all orders associated with this Stripe Session ID
+        List<Order> orders = orderRepository.findByStripeSessionId(sessionId);
+
+        if (orders.isEmpty()) {
+            return STATUS_NOT_FOUND;
+        }
+
+        // 2. Check the combined status of all orders
+
+        boolean allPaid = orders.stream()
+                .allMatch(order -> order.getStatus() == OrderStatus.PAID);
+
+        boolean anyFailedOrCancelled = orders.stream()
+                .anyMatch(order -> order.getStatus() == OrderStatus.FAILED || order.getStatus() == OrderStatus.CANCELLED);
+
+        // 3. Determine the final status for the client
+        if (allPaid) {
+            return STATUS_SUCCESS;
+        } else if (anyFailedOrCancelled) {
+            // If any associated order failed or was cancelled, report failure.
+            return STATUS_FAILED;
+        } else {
+            // If orders exist but not all are PAID, they must be PENDING/PROCESSING.
+            return STATUS_PENDING;
+        }
     }
 }

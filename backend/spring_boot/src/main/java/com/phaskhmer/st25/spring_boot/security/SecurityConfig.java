@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/cart/**").authenticated()
                         .requestMatchers("/api/payments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/payment/status").permitAll()
                         .requestMatchers("/api/checkout/**").authenticated()
                         .requestMatchers("/api/**").authenticated()
                         // Default catch-all rule (already covered by /api/** but kept for completeness)
@@ -69,8 +70,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Ensure you include 127.0.0.1:8080 or the IP address if you use that
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5000", "http://127.0.0.1:5000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5000", "http://127.0.0.1:5000", "https://exercise-deborah-roommates-demand.trycloudflare.com"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 

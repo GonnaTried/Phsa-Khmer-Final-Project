@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_app/models/user_profile.dart';
 import 'package:flutter_app/services/token_service.dart';
+import 'package:flutter_app/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 
 // const String _baseUrl = 'http://127.0.0.1:8000/api/auth';
 // const String _baseUrl = 'http://10.0.2.2:8000/api/auth'; // Android Emulator
-const String _baseUrl =
-    'https://tinderlike-bullheadedly-lillianna.ngrok-free.dev/api/auth';
+const String _baseUrl = AppConstants.kApiHostDjango + '/api/auth';
 
 // --- Auth Result Model ---
 

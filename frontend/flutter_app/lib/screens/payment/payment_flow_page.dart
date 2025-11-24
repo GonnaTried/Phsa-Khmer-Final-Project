@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/auth_provider.dart';
+import 'package:flutter_app/screens/auth/login_page.dart';
 import 'package:flutter_app/screens/home/home_page.dart';
+import 'package:flutter_app/services/address_service.dart';
 import 'package:flutter_app/services/stripe_payment_service.dart';
 import 'package:flutter_app/services/token_service.dart';
+import 'package:flutter_app/utils/app_constants.dart';
 import 'package:flutter_app/utils/navigation_utils.dart';
+import 'package:flutter_app/widgets/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentFlowPage extends StatefulWidget {
-  final int customerId = 13;
 
   const PaymentFlowPage({super.key});
 
@@ -102,6 +105,12 @@ class _PaymentFlowPageState extends State<PaymentFlowPage>
     } catch (e) {
       setState(() {
         _paymentStatus = 'Error initiating payment: ${e.toString()}';
+        NavigationUtils.pushAndRemoveUntil(context, LoginPage());
+        NavigationUtils.showAppSnackbar(
+          context,
+          "Authentication required. Please log in.",
+          isError: true,
+        );
       });
     }
   }
@@ -120,7 +129,6 @@ class _PaymentFlowPageState extends State<PaymentFlowPage>
         handleStatusResponse(status, timer);
       } catch (e) {
         print('Polling error: $e');
-        // Continue polling if network error
       }
     });
   }
@@ -135,7 +143,11 @@ class _PaymentFlowPageState extends State<PaymentFlowPage>
         _paymentStatus =
             'Payment SUCCESSFUL! Order Fulfilled and Cart Cleared.';
       });
-      NavigationUtils.showAppSnackbar(context, "Payment Successful!", isError: false);
+      NavigationUtils.showAppSnackbar(
+        context,
+        "Payment Successful!",
+        isError: false,
+      );
       NavigationUtils.pushAndRemoveUntil(context, HomePage());
     } else if (status == 'FAILED') {
       timer.cancel();
@@ -159,40 +171,66 @@ class _PaymentFlowPageState extends State<PaymentFlowPage>
         _paymentStatus.contains('Error');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userId = authProvider.currentUserId;
+    final customerPhone = authProvider.userProfile?.phoneNumber;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Stripe Checkout Flow')),
+      appBar: CustomAppBar(
+        titleText: "Stripe Payment",
+        automaticallyImplyLeading: true,
+      ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Customer ID: ${widget.customerId}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Status: $_paymentStatus',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-                color: isPolling
-                    ? Colors.orange
-                    : (isFinalState && _paymentStatus.contains('SUCCESS')
-                          ? Colors.green
-                          : Colors.black),
-                fontWeight: FontWeight.bold,
+        child: Container(
+          constraints: BoxConstraints(maxWidth: AppConstants.kMaxContentWidth),
+          padding: EdgeInsets.all(AppConstants.kDefaultPadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Customer ID: $userId',
+                      style: const TextStyle(
+                        fontSize: AppConstants.kTitleTextSize,
+                      ),
+                    ),
+                  ),
+
+                  AppSpaces.largeHorizontal,
+                  Expanded(
+                    child: Text(
+                      "Customer Phone Number: $customerPhone",
+                      style: TextStyle(fontSize: AppConstants.kTitleTextSize),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 30),
-            if (isPolling || _paymentStatus.contains('AWAITING RETURN'))
-              const CircularProgressIndicator()
-            else
-              ElevatedButton(
-                onPressed: startPaymentFlow,
-                child: Text(isFinalState ? 'Start New Payment' : 'Pay Now'),
+
+              AppSpaces.largeDivider,
+              Text(
+                'Status: $_paymentStatus',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: isPolling
+                      ? Colors.orange
+                      : (isFinalState && _paymentStatus.contains('SUCCESS')
+                            ? Colors.green
+                            : Colors.black),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-          ],
+              AppSpaces.largeVertical,
+
+              if (isPolling || _paymentStatus.contains('AWAITING RETURN'))
+                const CircularProgressIndicator()
+              else
+                ElevatedButton(
+                  onPressed: startPaymentFlow,
+                  child: Text(isFinalState ? 'Start New Payment' : 'Pay Now'),
+                ),
+            ],
+          ),
         ),
       ),
     );

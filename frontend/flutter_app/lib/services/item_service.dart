@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:flutter_app/models/product/item_model.dart';
+import 'package:flutter_app/models/seller/item_model.dart';
+import 'package:flutter_app/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String _baseUrl =
-    'https://lauderdale-surround-lender-forwarding.trycloudflare.com/api/items';
+const String _baseUrl = AppConstants.kApiHostSpring + '/api/items';
 
 class ItemService {
   final String? accessToken;

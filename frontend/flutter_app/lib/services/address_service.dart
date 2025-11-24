@@ -2,19 +2,20 @@
 
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_app/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/services/token_service.dart';
 import 'package:flutter_app/models/address_model.dart';
-import 'package:flutter_app/services/auth_service.dart'; // Import AuthService
+import 'package:flutter_app/services/auth_service.dart';
 import 'dart:io';
 
-const String _apiBaseUrl = 'https://lauderdale-surround-lender-forwarding.trycloudflare.com/api';
+const String _apiBaseUrl = AppConstants.kApiHostSpring + '/api';
 
 class AddressService {
   final TokenService _tokenService;
-  final AuthService _authService; // New dependency
+  final AuthService _authService;
 
-  AddressService(this._tokenService, this._authService); // Updated Constructor
+  AddressService(this._tokenService, this._authService);
 
   // Helper to get authorized headers
   Future<Map<String, String>> _getHeaders() async {
@@ -46,7 +47,6 @@ class AddressService {
       final headers = await _getHeaders();
       final response = await http.get(url, headers: headers);
 
-      // ... (rest of the logic remains the same)
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((item) => ShippingAddress.fromJson(item)).toList();

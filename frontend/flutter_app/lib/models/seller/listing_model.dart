@@ -1,4 +1,4 @@
-import 'package:flutter_app/models/product/listing_item_model.dart';
+import 'package:flutter_app/models/seller/listing_item_model.dart';
 
 class ListingModel {
   final int id;

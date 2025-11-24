@@ -21,8 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phaskhmer.st25.spring_boot.dto.listing.ItemMetadataDTO;
-import com.phaskhmer.st25.spring_boot.model.Item;
-import com.phaskhmer.st25.spring_boot.model.Listing;
+import com.phaskhmer.st25.spring_boot.model.listing.Item;
+import com.phaskhmer.st25.spring_boot.model.listing.Listing;
 import com.phaskhmer.st25.spring_boot.service.listing.ListingService;
 import com.phaskhmer.st25.spring_boot.service.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 // Base path is for listings owned by the authenticated seller
 @RequestMapping("/api/seller/listings")
-@RequiredArgsConstructor // Automatically creates the constructor for final fields
+@RequiredArgsConstructor
 public class SellerListingController {
 
     private final FileStorageService fileStorageService;

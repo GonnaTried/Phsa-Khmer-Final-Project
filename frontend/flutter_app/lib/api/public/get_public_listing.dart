@@ -1,8 +1,8 @@
 // api/public/get_public_listing.dart
 
 import 'dart:convert';
-import 'package:flutter_app/models/product/item_model.dart';
-import 'package:flutter_app/models/product/product.dart';
+import 'package:flutter_app/models/seller/item_model.dart';
+import 'package:flutter_app/models/seller/product.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/utils/app_constants.dart';
 import 'package:flutter_app/models/paginated_listing_response.dart';

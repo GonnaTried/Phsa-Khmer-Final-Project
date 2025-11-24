@@ -1,6 +1,8 @@
-package com.phaskhmer.st25.spring_boot.model;
+package com.phaskhmer.st25.spring_boot.model.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.phaskhmer.st25.spring_boot.model.Customer;
+import com.phaskhmer.st25.spring_boot.model.ShippingAddress;
 import jakarta.persistence.*;
 import lombok.Data;
 

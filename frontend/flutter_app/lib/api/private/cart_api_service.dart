@@ -7,7 +7,7 @@ import 'package:flutter_app/utils/app_constants.dart';
 import 'package:flutter_app/models/cart/cart_model.dart';
 
 const String BASE_URL =
-    "https://lauderdale-surround-lender-forwarding.trycloudflare.com";
+    AppConstants.kApiHostSpring;
 
 class CheckoutStatus {
   final String sessionId;

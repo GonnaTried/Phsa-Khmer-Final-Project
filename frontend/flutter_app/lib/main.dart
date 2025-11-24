@@ -132,7 +132,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'E-commerce App',
+      title: 'Phsa Khmer',
       theme: AppTheme.lightTheme,
       navigatorKey: navigatorKey,
       home: HomePage(),

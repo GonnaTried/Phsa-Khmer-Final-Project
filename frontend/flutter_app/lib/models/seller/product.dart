@@ -1,4 +1,4 @@
-import 'package:flutter_app/models/product/item_model.dart';
+import 'package:flutter_app/models/seller/item_model.dart';
 
 class Product {
   final String id;

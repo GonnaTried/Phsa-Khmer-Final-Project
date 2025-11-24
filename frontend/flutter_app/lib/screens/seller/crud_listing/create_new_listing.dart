@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/product/item_model.dart';
+import 'package:flutter_app/models/seller/item_model.dart';
 import 'package:flutter_app/providers/listing_provider.dart';
 import 'package:flutter_app/services/listing_service.dart';
 import 'package:flutter_app/utils/app_colors.dart';

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api/public/get_public_listing.dart';
 import 'package:flutter_app/models/paginated_listing_response.dart';
-import 'package:flutter_app/models/product/product.dart';
+import 'package:flutter_app/models/seller/product.dart';
 import 'package:flutter_app/providers/cart_provider.dart';
 import 'package:flutter_app/screens/view_listing/view_listing_detail.dart';
 import 'package:http/http.dart' as http;
@@ -362,19 +362,32 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _searchField() {
-    return Center(
+  // 1. Define the path to your asset
+  const String backgroundImagePath = 'assets/images/bg.jpg';
+
+  return Container(
+    decoration: const BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage(backgroundImagePath),
+        fit: BoxFit.cover,
+      ),
+    ),
+    
+    child: Center(
       child: Container(
         constraints: const BoxConstraints(
           maxWidth: AppConstants.kMaxContentWidth,
         ),
+        color: Colors.white.withOpacity(0.95), 
         padding: const EdgeInsets.all(AppConstants.kDefaultPadding),
         child: const CustomInputBox(
           placeholder: "Search for products, brands, and more",
           suffixIcon: Icon(Icons.search),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   /// This method is now only responsible for the UI structure, not data fetching.
   // Widget _homeContent(List<Product> products) {

@@ -1,7 +1,7 @@
 package com.phaskhmer.st25.spring_boot.model.cart;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.phaskhmer.st25.spring_boot.model.Item;
+import com.phaskhmer.st25.spring_boot.model.listing.Item;
 
 import jakarta.persistence.*;
 import lombok.Data;

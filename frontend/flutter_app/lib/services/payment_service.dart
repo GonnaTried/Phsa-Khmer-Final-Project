@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:flutter_app/models/checkout_request.dart';
+import 'package:flutter_app/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/services/token_service.dart'; // Assume TokenService is available
 import 'dart:io';
@@ -8,7 +9,7 @@ import 'dart:io';
 // IMPORTANT: Adjust this URL based on where you are running:
 // - 'http://10.0.2.2:8080/api' for Android Emulator
 // - 'http://localhost:8080/api' for Web/Desktop
-const String _paymentBaseUrl = 'https://lauderdale-surround-lender-forwarding.trycloudflare.com/api';
+const String _paymentBaseUrl = AppConstants.kApiHostSpring + '/api';
 
 class PaymentService {
   // If you need authorized requests for Payment Intent creation, inject TokenService

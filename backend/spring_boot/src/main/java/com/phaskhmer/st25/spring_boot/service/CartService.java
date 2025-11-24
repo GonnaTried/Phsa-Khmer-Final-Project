@@ -3,7 +3,7 @@ package com.phaskhmer.st25.spring_boot.service;
 import com.phaskhmer.st25.spring_boot.model.Customer;
 import com.phaskhmer.st25.spring_boot.model.cart.Cart;
 import com.phaskhmer.st25.spring_boot.model.cart.CartItem;
-import com.phaskhmer.st25.spring_boot.model.Item;
+import com.phaskhmer.st25.spring_boot.model.listing.Item;
 import com.phaskhmer.st25.spring_boot.repository.CartItemRepository;
 import com.phaskhmer.st25.spring_boot.repository.CartRepository;
 import com.phaskhmer.st25.spring_boot.repository.CustomerRepository;

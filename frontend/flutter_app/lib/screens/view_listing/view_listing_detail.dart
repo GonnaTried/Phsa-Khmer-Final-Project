@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api/public/get_public_listing.dart';
-import 'package:flutter_app/models/product/product.dart';
+import 'package:flutter_app/models/seller/product.dart';
 import 'package:flutter_app/providers/cart_provider.dart';
 import 'package:flutter_app/utils/app_colors.dart';
 import 'package:flutter_app/utils/app_constants.dart';

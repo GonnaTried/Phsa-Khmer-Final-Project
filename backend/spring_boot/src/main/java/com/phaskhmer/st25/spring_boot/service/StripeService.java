@@ -1,6 +1,7 @@
 package com.phaskhmer.st25.spring_boot.service;
 
 import com.phaskhmer.st25.spring_boot.model.cart.CartItem;
+import com.phaskhmer.st25.spring_boot.model.listing.Item;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
@@ -31,9 +32,10 @@ public class StripeService {
 
     /**
      * Creates a Stripe Checkout Session for the given cart items.
-     * @param cartItems The items to be purchased.
+     *
+     * @param cartItems  The items to be purchased.
      * @param customerId The ID of your internal customer (used in metadata).
-     * @param orderId The ID of the pending Order created in your DB (used in metadata).
+     * @param orderId    The ID of the pending Order created in your DB (used in metadata).
      * @return The created Stripe Session.
      * @throws StripeException if the Stripe API call fails.
      */
@@ -76,5 +78,68 @@ public class StripeService {
 
         // 4. Create and return the session
         return Session.create(params);
+    }
+
+    /**
+     * Creates a single Stripe Checkout Session from a list of pre-built Line Items.
+     * This is used when a single checkout covers multiple internal Order entities.
+     *
+     * @param lineItems             The pre-built Stripe Line Items (one for each created order).
+     * @param customerId            The ID of your internal customer.
+     * @param uniqueOrderIdMetadata A string containing all related Order IDs (e.g., "1_2_3").
+     * @return The created Stripe Session.
+     * @throws StripeException if the Stripe API call fails.
+     */
+    public Session createCheckoutSessionFromLineItems(
+            List<SessionCreateParams.LineItem> lineItems,
+            Long customerId,
+            String uniqueOrderIdMetadata) throws StripeException {
+
+        if (lineItems.isEmpty()) {
+            throw new IllegalArgumentException("Line items list cannot be empty for checkout session creation.");
+        }
+
+        // 1. Build the Session Parameters
+        SessionCreateParams params = SessionCreateParams.builder()
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl(successUrl)
+                .setCancelUrl(cancelUrl)
+                .addAllLineItem(lineItems)
+
+                // 2. Add Metadata for Webhook processing later
+                .putMetadata("customer_id", String.valueOf(customerId))
+                // Store all order IDs created in this transaction
+                .putMetadata("order_ids", uniqueOrderIdMetadata)
+
+                .build();
+
+        // 3. Create and return the session
+        return Session.create(params);
+    }
+
+    /**
+     * Helper to create a single Stripe Line Item, attaching the Order ID to the PriceData metadata.
+     */
+    public SessionCreateParams.LineItem createStripeLineItem(
+            Item item,
+            int quantity,
+            Long relatedOrderId) {
+
+        return SessionCreateParams.LineItem.builder()
+                .setQuantity((long) quantity)
+                .setPriceData(
+                        SessionCreateParams.LineItem.PriceData.builder()
+                                .setCurrency("usd")
+                                .setUnitAmount(item.getPrice().movePointRight(2).longValue())
+                                .setProductData(
+                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                .setName(item.getName())
+                                                .addImage(item.getImageUrl())
+                                                // 🚨 Crucial Metadata: Link this line item back to the single Order
+                                                .putMetadata("order_id", String.valueOf(relatedOrderId))
+                                                .build())
+                                .build())
+                .build();
     }
 }

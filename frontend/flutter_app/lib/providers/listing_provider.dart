@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_app/models/product/item_model.dart';
+import 'package:flutter_app/models/seller/item_model.dart';
 import 'package:uuid/uuid.dart';
 
 class ListingProvider with ChangeNotifier {

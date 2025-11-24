@@ -1,8 +1,8 @@
-package com.phaskhmer.st25.spring_boot.model;
+package com.phaskhmer.st25.spring_boot.model.order;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.phaskhmer.st25.spring_boot.model.order.Item;
+import com.phaskhmer.st25.spring_boot.model.listing.Item;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -32,5 +32,5 @@ public class OrderItem {
     private int quantity;
 
     @Column(name = "unit_price", nullable = false)
-    private BigDecimal unitPrice; // Price at the time of purchase
+    private BigDecimal unitPrice;
 }

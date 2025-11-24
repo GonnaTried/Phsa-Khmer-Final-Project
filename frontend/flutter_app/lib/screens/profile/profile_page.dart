@@ -5,6 +5,7 @@ import 'package:flutter_app/screens/address/address_page.dart';
 import 'package:flutter_app/screens/auth/login_page.dart';
 import 'package:flutter_app/screens/cart/cart_page.dart';
 import 'package:flutter_app/screens/home/home_page.dart';
+import 'package:flutter_app/screens/orders/view_orders.dart';
 import 'package:flutter_app/screens/profile/profile_detail.dart';
 import 'package:flutter_app/screens/seller/seller_dashboard_page.dart';
 import 'package:flutter_app/services/token_service.dart';
@@ -87,17 +88,17 @@ class _ProfilePageState extends State<ProfilePage> {
     if (_isLoggedIn) {
       return Scaffold(
         appBar: CustomAppBar(
-                titleText: "Profile",
-                automaticallyImplyLeading: true,
-              ),
+          titleText: "Profile",
+          automaticallyImplyLeading: true,
+        ),
         body: _profileDashbaord(user_profile),
       );
     } else {
       return Scaffold(
         appBar: CustomAppBar(
-                titleText: "Profile",
-                automaticallyImplyLeading: true,
-              ),
+          titleText: "Profile",
+          automaticallyImplyLeading: true,
+        ),
         body: Center(child: LoginPage()),
       );
     }
@@ -207,7 +208,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     CustomButton(
                       text: "Orders",
                       textAlignment: MainAxisAlignment.start,
-                      onPressed: () {},
+                      onPressed: () {
+                        NavigationUtils.push(context, ViewOrders());
+                      },
                       buttonColor: AppColors.primaryColor,
                       icon1: Icon(Icons.shopping_bag),
                       icon1Position: IconPosition.left,
@@ -234,34 +237,34 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     AppSpaces.smallVertical,
-                    CustomButton(
-                      text: "Payment Methods",
-                      textAlignment: MainAxisAlignment.start,
-                      onPressed: () {},
-                      buttonColor: AppColors.primaryColor,
-                      icon1: Icon(Icons.credit_card),
-                      icon1Position: IconPosition.left,
-                      icon2: Icon(Icons.arrow_right),
-                      icon2Position: IconPosition.right,
-                      width: double.infinity,
-                      height: 56,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    AppSpaces.smallVertical,
-                    CustomButton(
-                      text: "Wishlist",
-                      textAlignment: MainAxisAlignment.start,
-                      onPressed: () {},
-                      buttonColor: AppColors.linkedColor,
-                      icon1: Icon(Icons.favorite),
-                      icon1Position: IconPosition.left,
-                      icon2: Icon(Icons.arrow_right),
-                      icon2Position: IconPosition.right,
-                      width: double.infinity,
-                      height: 56,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    AppSpaces.smallVertical,
+                    // CustomButton(
+                    //   text: "Payment Methods",
+                    //   textAlignment: MainAxisAlignment.start,
+                    //   onPressed: () {},
+                    //   buttonColor: AppColors.primaryColor,
+                    //   icon1: Icon(Icons.credit_card),
+                    //   icon1Position: IconPosition.left,
+                    //   icon2: Icon(Icons.arrow_right),
+                    //   icon2Position: IconPosition.right,
+                    //   width: double.infinity,
+                    //   height: 56,
+                    //   borderRadius: BorderRadius.circular(12.0),
+                    // ),
+                    // AppSpaces.smallVertical,
+                    // CustomButton(
+                    //   text: "Wishlist",
+                    //   textAlignment: MainAxisAlignment.start,
+                    //   onPressed: () {},
+                    //   buttonColor: AppColors.linkedColor,
+                    //   icon1: Icon(Icons.favorite),
+                    //   icon1Position: IconPosition.left,
+                    //   icon2: Icon(Icons.arrow_right),
+                    //   icon2Position: IconPosition.right,
+                    //   width: double.infinity,
+                    //   height: 56,
+                    //   borderRadius: BorderRadius.circular(12.0),
+                    // ),
+                    // AppSpaces.smallVertical,
                     CustomButton(
                       text: "Seller Dashboard",
                       textAlignment: MainAxisAlignment.start,

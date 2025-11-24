@@ -4,7 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.phaskhmer.st25.spring_boot.model.ListingStatus;
+import com.phaskhmer.st25.spring_boot.model.listing.ListingStatus;
 import com.phaskhmer.st25.spring_boot.repository.ListingStatusRepository;
 
 @Configuration

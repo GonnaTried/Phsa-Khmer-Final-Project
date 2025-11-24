@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/product/listing_item_model.dart';
+import 'package:flutter_app/models/seller/listing_item_model.dart';
 import 'package:flutter_app/screens/home/home_page.dart';
 import 'package:flutter_app/screens/seller/crud_listing/create_new_listing.dart';
 import 'package:flutter_app/services/token_service.dart';
