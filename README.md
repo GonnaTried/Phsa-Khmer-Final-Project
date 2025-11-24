@@ -98,7 +98,7 @@ Finally, configure the mobile app to talk to your exposed backend URLs.
     Update the static strings with your Tunnel/Host URLs.
 
 ⚠️ IMPORTANT: Enter the base URL without the trailing /api.
-
+```dart
 // lib/utils/app_constants.dart
 
 class AppConstants {
@@ -114,3 +114,4 @@ class AppConstants {
   static const String kApiHostDjango = 'https://your-django-ngrok-url.app';
 
 }
+```
