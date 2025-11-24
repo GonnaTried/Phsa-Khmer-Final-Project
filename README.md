@@ -75,7 +75,7 @@ A. Stripe Webhook (Connect to Spring Boot)
     Set the destination URL:
 
     https://<your-spring-boot-domain>/stripe-webhook
-# Example: https://phsakhmer.com/stripe-webhook
+    # Example: https://phsakhmer.com/stripe-webhook
 
 B. Telegram Bot Webhook (Connect to Django)
 
@@ -86,7 +86,7 @@ B. Telegram Bot Webhook (Connect to Django)
     The destination URL format is:
 
     https://<your-django-ngrok-domain>/api/auth/webhook
-# Example: https://random-id.ngrok-free.app/api/auth/webhook
+    # Example: https://random-id.ngrok-free.app/api/auth/webhook
 (Note: Research setWebhook for the Telegram API to configure this).
 
 ### 4. Flutter App Configuration
