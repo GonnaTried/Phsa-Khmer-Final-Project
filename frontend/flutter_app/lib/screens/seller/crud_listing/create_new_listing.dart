@@ -349,26 +349,26 @@ class _CreateNewListingState extends State<CreateNewListing> {
                   // --- Action Buttons ---
                   Row(
                     children: [
-                      Expanded(
-                        child: CustomButton(
-                          text: "Cancel",
-                          onPressed: () => _cancelButtton(context),
-                          icon1: const Icon(Icons.close),
-                          buttonColor: AppColors.danger,
-                        ),
-                      ),
-                      AppSpaces.smallHorizontal,
-                      Expanded(
-                        child: CustomButton(
-                          text: "Draft",
-                          onPressed: () {
-                            /* TODO: Implement save to draft API */
-                          },
-                          icon1: const Icon(Icons.archive),
-                          buttonColor: AppColors.secondaryDark,
-                        ),
-                      ),
-                      AppSpaces.smallHorizontal,
+                      // Expanded(
+                      //   child: CustomButton(
+                      //     text: "Cancel",
+                      //     onPressed: () => _cancelButtton(context),
+                      //     icon1: const Icon(Icons.close),
+                      //     buttonColor: AppColors.danger,
+                      //   ),
+                      // ),
+                      // AppSpaces.smallHorizontal,
+                      // Expanded(
+                      //   child: CustomButton(
+                      //     text: "Draft",
+                      //     onPressed: () {
+                      //       /* TODO: Implement save to draft API */
+                      //     },
+                      //     icon1: const Icon(Icons.archive),
+                      //     buttonColor: AppColors.secondaryDark,
+                      //   ),
+                      // ),
+                      // AppSpaces.smallHorizontal,
                       Expanded(
                         child: CustomButton(
                           text: "Post",

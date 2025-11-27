@@ -70,7 +70,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Ensure you include 127.0.0.1:8080 or the IP address if you use that
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5000", "http://127.0.0.1:5000", "https://exercise-deborah-roommates-demand.trycloudflare.com"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5000", "http://127.0.0.1:5000", "https://gbp-minority-governance-passenger.trycloudflare.com"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

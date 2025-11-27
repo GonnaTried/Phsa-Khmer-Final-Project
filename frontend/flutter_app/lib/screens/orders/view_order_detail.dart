@@ -19,7 +19,7 @@ class ViewOrderDetail extends StatelessWidget {
   final OrderHistory order;
   bool isSeller = true;
 
-  ViewOrderDetail({super.key, required this.order, this.isSeller = true});
+  ViewOrderDetail({super.key, required this.order, this.isSeller = false});
 
   List<TableItemData> _generateTableItems() {
     final List<TableItemData> items = [];
@@ -93,16 +93,14 @@ class ViewOrderDetail extends StatelessWidget {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $accessToken',
           },
-          body: jsonEncode({
-            "newStatus": "CANCELLED"
-          }),
+          body: jsonEncode({"newStatus": "CANCELLED"}),
         );
         if (response.statusCode == 200) {
-          Navigator.of(context).pop(true); 
+          Navigator.of(context).pop(true);
           NavigationUtils.showAppSnackbar(
             context,
             "Order cancelled successfully.",
-            isError: true
+            isError: true,
           );
         }
       } catch (e) {
@@ -155,12 +153,10 @@ class ViewOrderDetail extends StatelessWidget {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $accessToken',
           },
-          body: jsonEncode({
-            "newStatus": "PROCESSING"
-          }),
+          body: jsonEncode({"newStatus": "PROCESSING"}),
         );
         if (response.statusCode == 200) {
-          Navigator.of(context).pop(true); 
+          Navigator.of(context).pop(true);
           NavigationUtils.showAppSnackbar(
             context,
             "Order Confirmed successfully.",

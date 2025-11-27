@@ -11,7 +11,7 @@ class AppConstants {
   static const String kBasePaywayUrl =
       'https://checkout-sandbox.payway.com.kh/';
   static const String kApiHostSpring =
-      'https://exercise-deborah-roommates-demand.trycloudflare.com';
+      'https://which-responsibility-rover-vocational.trycloudflare.com';
   static const String kApiHostDjango =
       'https://tinderlike-bullheadedly-lillianna.ngrok-free.dev';
 
